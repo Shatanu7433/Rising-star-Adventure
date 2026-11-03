@@ -5,9 +5,9 @@ import { listAll } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 function authorized(req: Request) {
-  const expected = process.env.ADMIN_TOKEN;
+  const expected = process.env.ADMIN_TOKEN?.trim();
   if (!expected) return "unconfigured" as const;
-  const given = req.headers.get("x-admin-token") ?? "";
+  const given = req.headers.get("x-admin-token")?.trim() ?? "";
   const a = Buffer.from(expected);
   const b = Buffer.from(given);
   return a.length === b.length && timingSafeEqual(a, b) ? ("ok" as const) : ("denied" as const);

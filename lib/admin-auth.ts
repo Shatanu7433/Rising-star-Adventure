@@ -6,8 +6,8 @@ import { redirect } from "next/navigation";
 const COOKIE = "rs_admin";
 
 function sign(): string {
-  const token = process.env.ADMIN_TOKEN;
-  if (!token || token.length < 12) throw new Error("Set ADMIN_TOKEN (12+ chars) in your env");
+  const token = process.env.ADMIN_TOKEN?.trim();
+  if (!token) throw new Error("Set ADMIN_TOKEN in your env");
   return createHmac("sha256", token).update("rising-stars-admin-session").digest("hex");
 }
 
@@ -17,14 +17,18 @@ function safeEqual(a: string, b: string) {
 }
 
 export function checkPassword(input: string) {
-  const token = process.env.ADMIN_TOKEN ?? "";
-  return token.length >= 12 && safeEqual(input, token);
+  const token = process.env.ADMIN_TOKEN?.trim() ?? "";
+  if (!token) return false;
+  return safeEqual(input.trim(), token);
 }
 
 export async function setSession() {
   (await cookies()).set(COOKIE, sign(), {
-    httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production",
-    path: "/", maxAge: 60 * 60 * 12,
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 12,
   });
 }
 

@@ -16,8 +16,11 @@ export default function AdminLogin() {
       body: JSON.stringify({ password }),
     });
     setBusy(false);
-    if (res.ok) { router.push("/admin/tours"); router.refresh(); }
-    else setError((await res.json().catch(() => ({}))).error || "Could not log in");
+    if (res.ok) {
+      window.location.href = "/admin/tours";
+    } else {
+      setError((await res.json().catch(() => ({}))).error || "Could not log in");
+    }
   }
 
   return (
