@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import TourCatalog from "@/components/TourCatalog";
-import { TOURS } from "@/data/tours";
+import { getPublishedTours } from "@/lib/tours-db";
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Tours",
   description: "Browse small-group adventure tours across India: mountains, deserts, coasts and wildlife, with transparent pricing.",
 };
 
-export default function ToursPage() {
+export default async function ToursPage() {
+  const tours = await getPublishedTours();
+
   return (
     <div className="mx-auto max-w-7xl px-4 pb-24 pt-28 sm:px-6 sm:pt-32">
       <p className="text-xs font-bold uppercase tracking-[0.3em] text-ember">All journeys</p>
@@ -20,7 +24,7 @@ export default function ToursPage() {
       </p>
 
       <div className="mt-10">
-        <TourCatalog tours={TOURS} />
+        <TourCatalog tours={tours} />
       </div>
 
       <div className="card mt-16 flex flex-col items-start justify-between gap-5 p-6 sm:flex-row sm:items-center sm:p-8">

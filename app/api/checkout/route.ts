@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { checkoutSchema } from "@/lib/schemas";
-import { getTour } from "@/data/tours";
+import { getPublishedTours, getTourBySlug } from "@/lib/tours-db";
 import { addBooking, attachStripeSession } from "@/lib/db";
 import { notifyOwner } from "@/lib/notify";
 import { formatINR, whatsappLink } from "@/lib/site";
@@ -27,7 +27,8 @@ export async function POST(req: Request) {
   }
   const input = parsed.data;
 
-  const tour = getTour(input.tourId);
+  const allTours = await getPublishedTours();
+  const tour = allTours.find((t) => t.id === input.tourId || t.slug === input.tourId) ?? (await getTourBySlug(input.tourId));
   if (!tour) return NextResponse.json({ error: "Tour not found." }, { status: 404 });
 
   // Departure must be at least 48 hours ahead (India Standard Time).

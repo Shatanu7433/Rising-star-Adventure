@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { ItineraryDay } from "@/data/tours";
+import type { ItineraryDay } from "@/lib/tours-db";
 
 export default function ItineraryTimeline({ days }: { days: ItineraryDay[] }) {
   const [open, setOpen] = useState<number | null>(days[0]?.day ?? null);
@@ -30,7 +30,7 @@ export default function ItineraryTimeline({ days }: { days: ItineraryDay[] }) {
             </button>
             {isOpen && (
               <p id={`day-${d.day}`} className="px-4 pb-1 pt-3 text-sm leading-relaxed text-white/70">
-                {d.details}
+                {d.details || d.description}
               </p>
             )}
           </li>

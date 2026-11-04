@@ -1,4 +1,4 @@
-import type { Motif } from "@/data/tours";
+import type { Motif } from "@/lib/tours-db";
 
 /** Illustrated placeholder art per tour (swap for real photos later by editing TourCard). */
 export default function TourArt({

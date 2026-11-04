@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getTour } from "@/data/tours";
+import { getTourBySlug } from "@/lib/tours-db";
 import { whatsappLink } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Checkout cancelled", robots: { index: false } };
 
 export default async function CancelPage({ searchParams }: { searchParams: Promise<{ tour?: string }> }) {
   const { tour: slug } = await searchParams;
-  const tour = slug ? getTour(slug) : undefined;
+  const tour = slug ? await getTourBySlug(slug) : null;
 
   return (
     <div className="mx-auto max-w-xl px-4 pb-24 pt-28 text-center sm:px-6 sm:pt-32">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Tour } from "@/data/tours";
+import type { Tour } from "@/lib/tours-db";
 import TourCard from "@/components/TourCard";
 
 const DURATIONS = [

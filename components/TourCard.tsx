@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Tour } from "@/data/tours";
+import type { Tour } from "@/lib/tours-db";
 import TourArt from "@/components/TourArt";
 import { ArrowIcon } from "@/components/Icons";
 import { formatINR } from "@/lib/site";
@@ -12,7 +12,12 @@ export default function TourCard({ tour }: { tour: Tour }) {
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <div className="h-full w-full transition duration-500 group-hover:scale-105">
-          <TourArt motif={tour.motif} palette={tour.palette} id={tour.id} />
+          {tour.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={tour.image} alt={tour.title} className="h-full w-full object-cover" />
+          ) : (
+            <TourArt motif={tour.motif ?? "mountain"} palette={tour.palette ?? ["#ff8a1f", "#120700"]} id={tour.id} />
+          )}
         </div>
         <span className="absolute left-3 top-3 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold backdrop-blur">
           {tour.days}D / {tour.nights}N

@@ -1,28 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { TOURS, getTour } from "@/data/tours";
+import { getPublishedTours, getTourBySlug } from "@/lib/tours-db";
 import TourArt from "@/components/TourArt";
 import ItineraryTimeline from "@/components/ItineraryTimeline";
 import BookingWidget from "@/components/BookingWidget";
 import { SITE, formatINR } from "@/lib/site";
 
+export const revalidate = 60;
+
 type Params = { slug: string };
 
-export function generateStaticParams() {
-  return TOURS.map((t) => ({ slug: t.slug }));
+export async function generateStaticParams() {
+  const tours = await getPublishedTours();
+  return tours.map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params;
-  const tour = getTour(slug);
+  const tour = await getTourBySlug(slug);
   if (!tour) return {};
   return { title: tour.title, description: `${tour.tagline} ${tour.days} days / ${tour.nights} nights from ${formatINR(tour.priceInr)} per person.` };
 }
 
 export default async function TourPage({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const tour = getTour(slug);
+  const tour = await getTourBySlug(slug);
   if (!tour) notFound();
 
   const jsonLd = {
@@ -35,7 +38,7 @@ export default async function TourPage({ params }: { params: Promise<Params> }) 
       "@type": "ListItem",
       position: i + 1,
       name: `Day ${d.day}: ${d.title}`,
-      description: d.details,
+      description: d.details ?? d.description ?? "",
     })),
     provider: { "@type": "TravelAgency", name: SITE.name, telephone: SITE.phoneTel, email: SITE.email },
     offers: {
@@ -52,7 +55,12 @@ export default async function TourPage({ params }: { params: Promise<Params> }) 
 
       <section className="relative h-[52vh] min-h-[340px] w-full overflow-hidden">
         <div className="absolute inset-0">
-          <TourArt motif={tour.motif} palette={tour.palette} id={`hero-${tour.id}`} />
+          {tour.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={tour.image} alt={tour.title} className="h-full w-full object-cover" />
+          ) : (
+            <TourArt motif={tour.motif ?? "mountain"} palette={tour.palette ?? ["#ff8a1f", "#120700"]} id={`hero-${tour.id}`} />
+          )}
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-black/40" />
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-7xl px-4 pb-8 sm:px-6">

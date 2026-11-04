@@ -1,9 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { Tour, ItineraryDay } from "@/lib/tours-db";
+import type { Tour, TourInput, ItineraryDay } from "@/lib/tours-db";
 
-type FormTour = Omit<Tour, "id" | "created_at" | "updated_at">;
+type FormTour = TourInput;
 
 const EMPTY: FormTour = {
   slug: "", title: "", location: "", summary: "", description: "", price: 0,
@@ -16,7 +16,25 @@ const label = "block text-sm font-medium text-stone-700";
 
 export default function TourForm({ tour }: { tour?: Tour }) {
   const router = useRouter();
-  const [t, setT] = useState<FormTour>(tour ? { ...EMPTY, ...tour } : EMPTY);
+  const [t, setT] = useState<FormTour>(
+    tour
+      ? {
+          slug: tour.slug,
+          title: tour.title,
+          location: tour.location,
+          summary: tour.summary,
+          description: tour.description,
+          price: tour.price,
+          duration: tour.duration,
+          difficulty: tour.difficulty,
+          image: tour.image,
+          highlights: tour.highlights,
+          itinerary: tour.itinerary,
+          published: tour.published,
+          sort_order: tour.sort_order,
+        }
+      : EMPTY
+  );
   const [highlightsText, setHighlightsText] = useState((tour?.highlights ?? []).join("\n"));
   const [slugTouched, setSlugTouched] = useState(Boolean(tour));
   const [error, setError] = useState("");

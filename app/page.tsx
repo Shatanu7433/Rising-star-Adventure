@@ -3,7 +3,9 @@ import PortalHero from "@/components/PortalHero";
 import Reveal from "@/components/Reveal";
 import TourCard from "@/components/TourCard";
 import ContactCard from "@/components/ContactCard";
-import { FEATURED_TOURS } from "@/data/tours";
+import { getPublishedTours } from "@/lib/tours-db";
+
+export const revalidate = 60;
 
 const WHY = [
   { icon: "💸", title: "Transparent pricing", text: "Every inclusion and exclusion is listed up front. The price you see is the price you pay." },
@@ -19,7 +21,11 @@ const STEPS = [
   { n: "4", title: "Pack and go", text: "We handle the rest. You make the memories." },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const allTours = await getPublishedTours();
+  const featured = allTours.filter((t) => t.featured);
+  const featuredTours = featured.length > 0 ? featured : allTours.slice(0, 3);
+
   return (
     <>
       <PortalHero />
@@ -32,7 +38,7 @@ export default function HomePage() {
           </h2>
         </Reveal>
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURED_TOURS.map((t, i) => (
+          {featuredTours.map((t, i) => (
             <Reveal key={t.id} delay={i * 0.08}>
               <TourCard tour={t} />
             </Reveal>
